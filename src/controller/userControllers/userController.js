@@ -73,86 +73,88 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-exports.resetPasswordRequest = async (req, res) => {
-  const { phone_number } = req.body;
+//-----------------------------------------------------reset Password----------------------------------------//
+// exports.resetPasswordRequest = async (req, res) => {
+//   const { phone_number } = req.body;
 
-  try {
-    // Check if the user exists
-    const user = await User.findOne({ phone_number });
-    if (!user) {
-      return res.status(400).json({ message: 'Phone number not found' });
-    }
+//   try {
+//     // Check if the user exists
+//     const user = await User.findOne({ phone_number });
+//     if (!user) {
+//       return res.status(400).json({ message: 'Phone number not found' });
+//     }
 
-    // Ensure the phone number includes the country code
-    const formattedPhoneNumber = `+91${phone_number}`;
+//     // Ensure the phone number includes the country code
+//     const formattedPhoneNumber = `+91${phone_number}`;
 
-    // Generate reset token
-    const resetToken = otpGen.generate(32, {
-      upperCaseAlphabets: true,
-      lowerCaseAlphabets: true,
-      digits: true,
-      specialChars: false,
-    });
+//     // Generate reset token
+//     const resetToken = otpGen.generate(32, {
+//       upperCaseAlphabets: true,
+//       lowerCaseAlphabets: true,
+//       digits: true,
+//       specialChars: false,
+//     });
 
-    // Log reset token
-    console.log('Generated Reset Token:', resetToken);
+//     // Log reset token
+//     console.log('Generated Reset Token:', resetToken);
 
-    // Save reset token and expiry to user
-    user.resetToken = resetToken;
-    user.resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
-    await user.save();
+//     // Save reset token and expiry to user
+//     user.resetToken = resetToken;
+//     user.resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
+//     await user.save();
 
-    // Send reset token using Twilio
-    twilio.messages
-      .create({
-        from: '+12015811009',
-        to: formattedPhoneNumber,
-        body: `Your password reset token is: ${resetToken}`,
-      })
-      .then(function (twilioRes) {
-        console.log('Reset token sent successfully!');
-        res.json({ message: 'Reset token sent successfully', user_id: user._id, resetToken });
-      })
-      .catch(function (twilioErr) {
-        console.error('Error sending reset token:', twilioErr);
-        res.status(500).json({ message: 'Failed to send reset token' });
-      });
-  } catch (error) {
-    console.error('Error in resetPasswordRequest:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
+//     // Send reset token using Twilio
+//     twilio.messages
+//       .create({
+//         from: '+12015811009',
+//         to: formattedPhoneNumber,
+//         body: `Your password reset token is: ${resetToken}`,
+//       })
+//       .then(function (twilioRes) {
+//         console.log('Reset token sent successfully!');
+//         res.json({ message: 'Reset token sent successfully', user_id: user._id, resetToken });
+//       })
+//       .catch(function (twilioErr) {
+//         console.error('Error sending reset token:', twilioErr);
+//         res.status(500).json({ message: 'Failed to send reset token' });
+//       });
+//   } catch (error) {
+//     console.error('Error in resetPasswordRequest:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
 
-exports.resetPassword = async (req, res) => {
-  const { token } = req.params;
-  const { newPassword } = req.body;
+// exports.resetPassword = async (req, res) => {
+//   const { token } = req.params;
+//   const { newPassword } = req.body;
 
-  try {
-    // Find the user by reset token and check expiry
-    const user = await User.findOne({
-      resetToken: token,
-      resetTokenExpiry: { $gt: new Date() },
-    });
+//   try {
+//     // Find the user by reset token and check expiry
+//     const user = await User.findOne({
+//       resetToken: token,
+//       resetTokenExpiry: { $gt: new Date() },
+//     });
 
-    if (!user) {
-      console.log('Invalid or expired token. Token:', token);
-      return res.status(400).json({ message: 'Invalid or expired token' });
-    }
+//     if (!user) {
+//       console.log('Invalid or expired token. Token:', token);
+//       return res.status(400).json({ message: 'Invalid or expired token' });
+//     }
 
-    // Update the password
-    user.password = await bcrypt.hash(newPassword, 10);
-    user.resetToken = null;
-    user.resetTokenExpiry = null;
+//     // Update the password
+//     user.password = await bcrypt.hash(newPassword, 10);
+//     user.resetToken = null;
+//     user.resetTokenExpiry = null;
 
-    await user.save();
+//     await user.save();
 
-    res.json({ message: 'Password reset successfully' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-};
+//     res.json({ message: 'Password reset successfully' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// };
 
+//------------------------------------------loginUserWithOTP-------------------------------------------//
 exports.loginUserWithOTP = async (req, res) => {
   const { phone_number } = req.body;
 
@@ -207,6 +209,7 @@ exports.loginUserWithOTP = async (req, res) => {
   }
 };
 
+//-------------------------------------------------getAllUsers---------------------------------------------//
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find();
@@ -217,6 +220,7 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
+//-----------------------------------------------getUserById-------------------------------------------//
 exports.getUserById = async (req, res) => {
   const userId = req.params.id;
 
@@ -233,6 +237,7 @@ exports.getUserById = async (req, res) => {
   }
 };
 
+//----------------------------------------------updateUser---------------------------------------------//
 exports.updateUser = async (req, res) => {
   const userId = req.params.id;
 
@@ -254,6 +259,8 @@ exports.updateUser = async (req, res) => {
   }
 };
 
+
+//--------------------------------------------------deleteUser----------------------------------------------//
 exports.deleteUser = async (req, res) => {
   const userId = req.params.id;
 

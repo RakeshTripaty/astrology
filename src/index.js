@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const userRoutes = require('./routes/userRoute');
+const userRoutes = require('./routes/user.routes');
+const astrologerRoute= require('./routes/astrologer.routes')
 const mongoose = require('mongoose');
 require('dotenv').config();
 
@@ -19,7 +20,7 @@ mongoose.connect(process.env.MONGODB_URL, {
     .catch(err => console.log(err));
   
 app.use('/', userRoutes);
-
+app.use('/',astrologerRoute)
 
 
 app.listen(3001, function () { 
