@@ -12,21 +12,19 @@ const auth_token = process.env.TWILIO_AUTH_TOKEN;
 const twilio = require('twilio')(sid, auth_token);
 const User = require('../../model/userModel/userModel');
 
-// Joi schema for user registration
+
+
+
+//------------------------------------ Joi schema for user registration------------------------------------//
 const userRegistrationSchema = Joi.object({
   name: Joi.string().required(),
+  email: Joi.string().email().required(),
   phone_number: Joi.string().pattern(/^[0-9]{10}$/).required(),
   place_of_birth: Joi.string().required(),
   date_of_birth: Joi.date().iso().required(),
   time_of_birth: Joi.string().required(),
   password: Joi.string().pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/).required(),
 });
-
-// Function to save OTP to the user
-async function saveOTP(user, otp) {
-  user.otp = otp;
-  await user.save();
-}
 
 exports.registerUser = async (req, res) => {
   try {
@@ -38,6 +36,7 @@ exports.registerUser = async (req, res) => {
 
     const {
       name,
+      email,
       phone_number,
       place_of_birth,
       date_of_birth,
@@ -45,9 +44,11 @@ exports.registerUser = async (req, res) => {
       password,
     } = req.body;
 
-    // Check if the user already exists
-    const existingUser = await User.findOne({ phone_number });
-    if (existingUser) {
+    // Check if the user already exists by email or phone number
+    const existingUserByEmail = await User.findOne({ email });
+    const existingUserByPhone = await User.findOne({ phone_number });
+
+    if (existingUserByEmail || existingUserByPhone) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
@@ -57,6 +58,7 @@ exports.registerUser = async (req, res) => {
     // Create a new user with the hashed password
     const newUser = new User({
       name,
+      email,
       phone_number,
       place_of_birth,
       date_of_birth,
@@ -208,6 +210,9 @@ exports.loginUserWithOTP = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
+
 
 //-------------------------------------------------getAllUsers---------------------------------------------//
 exports.getAllUsers = async (req, res) => {

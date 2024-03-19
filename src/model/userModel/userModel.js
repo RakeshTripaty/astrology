@@ -35,10 +35,17 @@
 //     ref: 'Admin',
 //   },
 
+//   wallet: {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: 'Wallet',
+//   },
 //   otp: {
 //     type: String,
 //   },
-  
+//   // Add image field
+//   profile_image: {
+//     type: String, // You can use String to store the URL of the uploaded image
+//   },
 // });
 
 // // Hashing password before saving
@@ -68,6 +75,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  email: {
+    type: String,
+    required: true,
+  },
   place_of_birth: {
     type: String,
     required: true,
@@ -92,7 +103,6 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Admin',
   },
-
   wallet: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Wallet',
@@ -100,9 +110,8 @@ const userSchema = new mongoose.Schema({
   otp: {
     type: String,
   },
-  // Add image field
   profile_image: {
-    type: String, // You can use String to store the URL of the uploaded image
+    type: String,
   },
 });
 

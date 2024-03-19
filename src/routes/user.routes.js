@@ -17,7 +17,7 @@ const { check } = require('express-validator');
 const  authenticateToken = require('../middleware/auth');
 
 // User registration route
-router.post('/register', userController.registerUser); 
+router.post('/registerUser', userController.registerUser); 
 
 router.get('/getusers', userController.getAllUsers);
 
