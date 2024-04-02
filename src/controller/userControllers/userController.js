@@ -11,6 +11,7 @@ const sid = process.env.TWILIO_SID;
 const auth_token = process.env.TWILIO_AUTH_TOKEN;
 const twilio = require('twilio')(sid, auth_token);
 const User = require('../../model/userModel/userModel');
+const nodemailer = require('nodemailer');
 
 
 
@@ -287,3 +288,37 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+
+exports.loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Check if the user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid mail' });
+    }
+
+    // Check if the password is correct
+    if (password !== user.password) {
+      return res.status(400).json({ message: 'Invalid password' });
+    }
+
+    // Create JWT token
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      'your_secret_key',
+      { expiresIn: '1h' } // Token expires in 1 hour
+    );
+
+    res.json({ message: 'Login successful', token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+
+
