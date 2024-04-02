@@ -157,61 +157,6 @@ exports.registerUser = async (req, res) => {
 //   }
 // };
 
-//------------------------------------------loginUserWithOTP-------------------------------------------//
-exports.loginUserWithOTP = async (req, res) => {
-  const { phone_number } = req.body;
-
-  try {
-    // Check if the user exists
-    const user = await User.findOne({ phone_number });
-    if (!user) {
-      return res.status(400).json({ message: 'Phone number not found' });
-    }
-
-    // Ensure the phone number includes the country code
-    const formattedPhoneNumber = `+91${phone_number}`;
-
-    // Generate OTP
-    const otp = otpGen.generate(6, {
-      digits: true,
-      upperCaseAlphabets: false,
-      lowerCaseAlphabets: false,
-      specialChars: false,
-    });
-
-    // Save OTP to user
-    await saveOTP(user, otp);
-
-    // Send OTP using Twilio
-    twilio.messages
-      .create({
-        from: '+12015811009',
-        to: formattedPhoneNumber,
-        body: `Your OTP for login is: ${otp}`,
-      })
-      .then(async function (twilioRes) {
-        console.log('OTP sent successfully!');
-
-        // Create JWT token
-        const token = jwt.sign(
-          { userId: user._id, phone_number: user.phone_number },
-          'your_secret_key',
-          { expiresIn: '1h' } // Token expires in 1 hour
-        );
-
-        // Send OTP and token in the response
-        res.json({ message: 'OTP sent successfully', user_id: user._id, otp, token });
-      })
-      .catch(function (twilioErr) {
-        console.error('Error sending OTP:', twilioErr);
-        res.status(500).json({ message: 'Failed to send OTP' });
-      });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
 
 
 
