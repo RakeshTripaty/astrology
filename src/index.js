@@ -10,7 +10,11 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3001',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // Enable if you need to send cookies with the request
+}));
 
 
 
