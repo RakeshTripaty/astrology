@@ -4,12 +4,13 @@ const userRoutes = require('./routes/user.routes');
 const astrologerRoute= require('./routes/astrologer.routes')
 const mongoose = require('mongoose');
 require('dotenv').config();
+const cors = require('cors');
 
 const app = express();
 
 app.use(bodyParser.json());
 
-
+app.use(cors());
 
 
 
