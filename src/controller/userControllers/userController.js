@@ -25,11 +25,64 @@ const userRegistrationSchema = Joi.object({
   date_of_birth: Joi.date().iso().required(),
   time_of_birth: Joi.string().required(),
   password: Joi.string().pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/).required(),
+  confirmPassword: Joi.string().valid(Joi.ref('password')).required(),
 });
+
+// exports.registerUser = async (req, res) => {
+//   try {
+//     // Validate the request body
+//     const { error } = userRegistrationSchema.validate(req.body);
+//     if (error) {
+//       return res.status(400).json({ message: error.details[0].message });
+//     }
+
+//     const {
+//       name,
+//       email,
+//       phone_number,
+//       place_of_birth,
+//       date_of_birth,
+//       time_of_birth,
+//       password,
+//     } = req.body;
+
+//     // Check if the user already exists by email or phone number
+//     const existingUserByEmail = await User.findOne({ email });
+//     const existingUserByPhone = await User.findOne({ phone_number });
+
+//     if (existingUserByEmail || existingUserByPhone) {
+//       return res.status(400).json({ message: 'User already exists' });
+//     }
+
+//     // Hash the password using bcrypt
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     // Create a new user with the hashed password
+//     const newUser = new User({
+//       name,
+//       email,
+//       phone_number,
+//       place_of_birth,
+//       date_of_birth,
+//       time_of_birth,
+//       password: hashedPassword, // Save the hashed password
+//     });
+
+//     // Save the user to the database
+//     const savedUser = await newUser.save();
+
+//     res.status(201).json({ message: 'User registered successfully', user: savedUser });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
+
+
 
 exports.registerUser = async (req, res) => {
   try {
-    // Validate the request body
+    // Validate the request body including password confirmation
     const { error } = userRegistrationSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
@@ -43,7 +96,13 @@ exports.registerUser = async (req, res) => {
       date_of_birth,
       time_of_birth,
       password,
+      confirmPassword, // New field for password confirmation
     } = req.body;
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: 'Passwords do not match' });
+    }
 
     // Check if the user already exists by email or phone number
     const existingUserByEmail = await User.findOne({ email });
