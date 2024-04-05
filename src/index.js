@@ -11,16 +11,16 @@ const app = express();
 app.use(bodyParser.json());
 
 
-// app.use(cors({
-//   origin: ['http://15.206.170.181:3001', 'http://localhost:3001'], 
-//   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'], // Allowed HTTP methods
-//   credentials: true, // Enable sending cookies and other credentials
-// }));
-
-
 app.use(cors({
-  origin: "http://localhost:5176" 
+  origin:  "http://localhost:3001", 
+  methods: ['GET', 'POST'], // Allowed HTTP methods
+  credentials: true, // Enable sending cookies and other credentials
 }));
+
+
+// app.use(cors({
+//   origin: "http://localhost:5176" 
+// }));
 
 mongoose.connect(process.env.MONGODB_URL, {
     //serverSelectionTimeoutMS: 5000,
