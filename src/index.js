@@ -10,15 +10,12 @@ const app = express();
 
 app.use(bodyParser.json());
 
+app.get('/help',(req,res)=>{
+  res.send("hi")
+}),
 
-app.use(cors({
-  origin: "http://localhost:3000",
-  methods: ['GET', 'POST'],
-  credentials: true
-}));
-// app.use(cors({
-//   origin: "http://localhost:5176" 
-// }));
+app.use(cors());
+
 
 mongoose.connect(process.env.MONGODB_URL, {
     //serverSelectionTimeoutMS: 5000,

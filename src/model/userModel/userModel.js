@@ -97,10 +97,6 @@ const userSchema = new mongoose.Schema({
   
   },
 
-  confirmPassword: {
-    type: String,
-    required: true,
-  },
   astrologer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Astrologer',
