@@ -25,7 +25,7 @@ const userRegistrationSchema = Joi.object({
   date_of_birth: Joi.date().iso().required(),
   time_of_birth: Joi.string().required(),
   password: Joi.string().pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/).required(),
-  confirmPassword: Joi.string().valid(Joi.ref('password')).required(),
+ 
 });
 
 exports.registerUser = async (req, res) => {

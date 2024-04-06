@@ -23,7 +23,7 @@ mongoose.connect(process.env.MONGODB_URL, {
     .then(() => console.log("MongoDb is connected"))
     .catch(err => console.log(err));
   
-app.use('/', userRoutes);
+app.use('/user', userRoutes);
 app.use('/',astrologerRoute)
 
 
