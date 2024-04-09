@@ -14,8 +14,13 @@ app.get('/help',(req,res)=>{
   res.send("hi")
 }),
 
-app.use(cors());
+//app.use(cors());
 
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, 
+}));
 
 mongoose.connect(process.env.MONGODB_URL, {
     //serverSelectionTimeoutMS: 5000,
